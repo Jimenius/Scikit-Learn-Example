@@ -4,7 +4,7 @@ from sklearn.metrics import accuracy_score as acc
 from sklearn.svm import SVC
 from sklearn.ensemble import AdaBoostClassifier as AB, RandomForestClassifier as RF
 
-def Process(X, y, rtype = 'number', k = 10, encoded = False):
+def Process(X, y, rtype = 'number', k = 10, encoded = False, svm_kernel = 'rbf'):
     '''
     Parameters:
         X: (required) numpy ndarray
@@ -20,12 +20,15 @@ def Process(X, y, rtype = 'number', k = 10, encoded = False):
             Cs
         encoded: boolean
             If the labels are already encoded as integers
+        svm_kernel: string
+            Selected kernel of SVM classifier
     '''
     
     assert len(X.shape) == 2
     assert len(y.shape) == 1
     assert X.shape[0] == y.shape[0]
     print('########################################')
+    print('Selected SVM kernel is', svm_kernel)
     
     num_samples = X.shape[0]
     num_features = X.shape[1]
@@ -57,14 +60,14 @@ def Process(X, y, rtype = 'number', k = 10, encoded = False):
     print('Test feature shape', testX.shape)
     print('########################################')
     
-    svmclf = SVC(gamma = 0.001) # SVM classifier
+    svmclf = SVC(gamma = 'scale', kernel = svm_kernel) # SVM classifier
     _ = svmclf.fit(trainX, trainY)
     ABclf = AB() # AdaBoost classifier
     _ = ABclf.fit(trainX, trainY)
     RFclf = RF(n_estimators = 100, max_depth = 30, random_state = 0) # Random Forest classifier
     _ = RFclf.fit(trainX, trainY)
     
-    svmres = svmclf.predict(testX) # SVM result
+    svmres = svmclf.predict(testX) # SVM withresult
     ABres = ABclf.predict(testX) # Adaboost result
     RFres = RFclf.predict(testX) # Random Forest result
     
